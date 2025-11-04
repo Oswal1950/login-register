@@ -1,10 +1,9 @@
 <?php
 session_start();
 if (!isset($_SESSION["user"])) {
-   header("Location: login.php");
+   header("Location: login.php"); 
+   exit();
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -19,17 +18,16 @@ if (!isset($_SESSION["user"])) {
 </head>
 <body>
     <div class="container">
-        <h1>Bienvenido
-
-        </h1>
-        <a href="logout.php" class="btn btn-warning">Logout</a>
+        <h1>Bienvenido</h1>
+        <a href="logout.php" class="btn btn-warning">Cerrar Sesion</a>
+        <a href="registro_pacientes.php" class="btn btn-warning">Agregar Informacion de Paciente</a>
     </div>
 
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tabla con Filtros y Búsqueda</title>
+  <title>INICIO</title>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -38,27 +36,49 @@ if (!isset($_SESSION["user"])) {
   <link href="https://cdn.datatables.net/2.1.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-
-  <div class="container py-5">
-    <h2 class="mb-4 text-center">Tabla con Filtros y Búsqueda</h2>
-
+<div class="table-responsive">
+  <div class="container py-6">
+    <h2 class="mb-4 text-center">AGENDA PARA ESTUDIOS DE PACIENTES HAQ</h2>
     <div class="card shadow-sm">
       <div class="card-body">
-        <table id="miTabla" class="table table-striped table-hover">
+        <table id="miTabla" class="table table-striped table-hover" >
+          <?php
+          require_once "database.php";
+          $sql = "SELECT * FROM pacientes ORDER BY folio DESC";
+          $result = mysqli_query($conn, $sql);
+          ?>
           <thead class="table-dark">
             <tr>
-              <th>Nombre</th>
-              <th>Edad</th>
-              <th>Ciudad</th>
-              <th>Ocupación</th>
+              <th>FOLIO</th>
+              <th>NOMBRE COMPLETO DEL PACIENTE</th>
+              <th>SEXO</th>
+              <th>EDAD</th>
+              <th>FECHA DE NACIEMIENTO</th>
+              <th>ESTUDIOS A REALIZAR</th>
+              <th>FECHA</th>
+              <th>HORA</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>Juan Pérez</td><td>28</td><td>Ciudad de México</td><td>Ingeniero</td></tr>
-            <tr><td>María López</td><td>35</td><td>Guadalajara</td><td>Diseñadora</td></tr>
-            <tr><td>Carlos Ruiz</td><td>22</td><td>Monterrey</td><td>Estudiante</td></tr>
-            <tr><td>Laura Gómez</td><td>41</td><td>Puebla</td><td>Doctora</td></tr>
-            <tr><td>Andrés Torres</td><td>30</td><td>Querétaro</td><td>Abogado</td></tr>
+            <?php
+        // 3️⃣ Mostrar los datos
+        if ($result->num_rows > 0) {
+            while($fila = $result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . $fila["folio"] . "</td>";
+                echo "<td>" . $fila["nombre_paciente"] . "</td>";
+                echo "<td>" . $fila["sexo"] . "</td>";
+                echo "<td>" . $fila["edad"] . "</td>";
+                echo "<td>" . $fila["fecha_nac"] . "</td>";
+                echo "<td>" . $fila["estudio"] . "</td>";
+                echo "<td>" . $fila["fecha"] . "</td>";
+                echo "<td>" . $fila["hora"] . "</td>";
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='8' style='text-align:center;'>No hay pacientes registrados.</td></tr>";
+        }
+        ?>
           </tbody>
           <tfoot>
             <tr>
@@ -70,7 +90,8 @@ if (!isset($_SESSION["user"])) {
           </tfoot>
         </table>
       </div>
-    </div>
+
+</div>
   </div>
 
   <!-- JS: jQuery + DataTables + Bootstrap -->
@@ -96,6 +117,7 @@ if (!isset($_SESSION["user"])) {
             });
           });
         }
+        
       });
     });
   </script>
